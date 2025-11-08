@@ -1,0 +1,38 @@
+{
+  "name": "x-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for X (Twitter) API v2 integration with OAuth 2.0 + PKCE",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/multi-user-server.js",
+    "start:legacy": "node dist/index.js",
+    "auth": "tsc && node dist/auth-helper.js",
+    "test": "tsc && node dist/test-auth-flows.js",
+    "dev": "tsc && node dist/multi-user-server.js",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "better-sqlite3": "^9.2.2",
+    "keytar": "^7.9.0",
+    "crypto": "^1.0.1",
+    "node-fetch": "^3.3.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "twitter",
+    "x",
+    "api",
+    "oauth",
+    "bookmarks"
+  ]
+}
