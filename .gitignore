@@ -7,6 +7,8 @@ dist/
 # Token storage
 .x-mcp/
 tokens.json
+.mcp/
+*.db
 
 # IDE
 .vscode/

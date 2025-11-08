@@ -39,8 +39,8 @@ export class OAuthManager {
       'users.read',
       'tweet.read', 
       'tweet.write',
-      'bookmark.read',
-      'bookmarks.write',
+      'bookmark.read',  // Note: singular, not plural!
+      'bookmark.write', // Note: singular, not plural!
       'offline.access'
     ];
   }
@@ -223,9 +223,7 @@ export class OAuthManager {
 
   async handleHostedCallback(code: string, state: string): Promise<{ user_id: number; pairing_code?: string }> {
     // Find pairing session by state
-    const pairingSession = this.db.db.prepare(
-      'SELECT * FROM pairing_sessions WHERE state = ? AND expires_at > ?'
-    ).get(state, Date.now());
+    const pairingSession = this.db.getPairingSessionByState(state);
 
     if (!pairingSession) {
       throw new Error('Invalid or expired pairing session');
@@ -334,7 +332,7 @@ export class OAuthManager {
     const granted = grantedScopes.split(' ');
     
     return required.filter(scope => {
-      // Handle bookmark.read vs bookmarks.read
+      // Handle bookmark.read vs bookmarks.read (both are acceptable - X uses singular)
       if (scope === 'bookmark.read') {
         return !granted.includes('bookmark.read') && !granted.includes('bookmarks.read');
       }

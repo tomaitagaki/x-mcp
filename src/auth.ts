@@ -18,11 +18,20 @@ export class XAuthManager {
   }
 
   getAuthorizationUrl(codeChallenge: string): string {
+      // Allow testing with custom scopes via environment variable
+      // Correct scope names: bookmark.read and bookmark.write (singular, not plural!)
+      let scopes = process.env.X_API_TEST_SCOPES || 'users.read tweet.read tweet.write bookmark.read bookmark.write offline.access';
+      
+      // If testing, try with minimal scopes first
+      if (process.env.X_API_TEST_SCOPES === 'minimal') {
+        scopes = 'users.read tweet.read';
+      }
+    
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
-      scope: 'bookmark.read bookmarks.write tweet.write tweet.read users.read offline.access',
+      scope: scopes,
       state: randomBytes(16).toString('base64url'),
       code_challenge: codeChallenge,
       code_challenge_method: 'S256'
@@ -120,7 +129,7 @@ export class XAuthManager {
   hasRequiredScopes(): boolean {
     if (!this.tokenData?.scope) return false;
     
-    const requiredScopes = ['bookmark.read', 'bookmarks.write', 'tweet.write', 'users.read'];
+    const requiredScopes = ['bookmark.read', 'bookmark.write', 'tweet.write', 'users.read'];
     const grantedScopes = this.tokenData.scope.split(' ');
     
     return requiredScopes.every(scope => 
@@ -130,9 +139,9 @@ export class XAuthManager {
   }
 
   getMissingScopes(): string[] {
-    if (!this.tokenData?.scope) return ['bookmark.read', 'bookmarks.write', 'tweet.write', 'users.read'];
+    if (!this.tokenData?.scope) return ['bookmark.read', 'bookmark.write', 'tweet.write', 'users.read'];
     
-    const requiredScopes = ['bookmark.read', 'bookmarks.write', 'tweet.write', 'users.read'];
+    const requiredScopes = ['bookmark.read', 'bookmark.write', 'tweet.write', 'users.read'];
     const grantedScopes = this.tokenData.scope.split(' ');
     
     return requiredScopes.filter(scope => 

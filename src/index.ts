@@ -212,9 +212,9 @@ class XMCPServer {
         switch (name) {
           case 'bookmarks.list': {
             const result = await this.xClient.getBookmarks({
-              userId: args.user_id,
-              maxResults: args.max_results,
-              paginationToken: args.pagination_token,
+              userId: (args as any)?.user_id as string | undefined,
+              maxResults: (args as any)?.max_results as number | undefined,
+              paginationToken: (args as any)?.pagination_token as string | undefined,
             });
 
             return {
@@ -229,8 +229,8 @@ class XMCPServer {
 
           case 'bookmarks.add': {
             const result = await this.xClient.addBookmark({
-              userId: args.user_id,
-              tweetId: args.tweet_id,
+              userId: (args as any)?.user_id as string | undefined,
+              tweetId: (args as any)?.tweet_id as string,
             });
 
             return {
@@ -245,8 +245,8 @@ class XMCPServer {
 
           case 'bookmarks.remove': {
             const result = await this.xClient.removeBookmark({
-              userId: args.user_id,
-              tweetId: args.tweet_id,
+              userId: (args as any)?.user_id as string | undefined,
+              tweetId: (args as any)?.tweet_id as string,
             });
 
             return {
@@ -261,10 +261,10 @@ class XMCPServer {
 
           case 'tweet.create': {
             const result = await this.xClient.createTweet({
-              text: args.text,
-              mediaIds: args.media_ids,
-              reply: args.reply,
-              quoteTweetId: args.quote_tweet_id,
+              text: (args as any)?.text as string,
+              mediaIds: (args as any)?.media_ids as string[] | undefined,
+              reply: (args as any)?.reply as { inReplyToTweetId: string } | undefined,
+              quoteTweetId: (args as any)?.quote_tweet_id as string | undefined,
             });
 
             return {

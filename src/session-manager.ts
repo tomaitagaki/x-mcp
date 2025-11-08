@@ -167,8 +167,7 @@ export class SessionManager {
 
   // List all users (for admin/debugging purposes)
   getAllUsers(): User[] {
-    const stmt = this.db.db.prepare('SELECT * FROM users ORDER BY created_at DESC');
-    return stmt.all() as User[];
+    return this.db.getAllUsers();
   }
 
   // Get user statistics
@@ -177,21 +176,14 @@ export class SessionManager {
     lastActivity?: number;
     hasTokens: boolean;
   } {
-    const sessionStmt = this.db.db.prepare('SELECT COUNT(*) as count FROM sessions WHERE user_id = ?');
-    const sessionResult = sessionStmt.get(userId) as { count: number };
-
-    const lastActivityStmt = this.db.db.prepare(
-      'SELECT MAX(created_at) as last_activity FROM sessions WHERE user_id = ?'
-    );
-    const lastActivityResult = lastActivityStmt.get(userId) as { last_activity: number | null };
-
-    const tokensStmt = this.db.db.prepare('SELECT COUNT(*) as count FROM user_tokens WHERE user_id = ?');
-    const tokensResult = tokensStmt.get(userId) as { count: number };
+    const sessionCount = this.db.getUserSessionCount(userId);
+    const lastActivity = this.db.getUserLastActivity(userId);
+    const tokenCount = this.db.getUserTokenCount(userId);
 
     return {
-      sessionCount: sessionResult.count,
-      lastActivity: lastActivityResult.last_activity || undefined,
-      hasTokens: tokensResult.count > 0
+      sessionCount,
+      lastActivity: lastActivity || undefined,
+      hasTokens: tokenCount > 0
     };
   }
 }

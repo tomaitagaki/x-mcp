@@ -206,7 +206,7 @@ export class XDatabase {
 
   getPairingSession(pairingCode: string): PairingSession | null {
     const stmt = this.db.prepare('SELECT * FROM pairing_sessions WHERE pairing_code = ? AND expires_at > ?');
-    const row = stmt.get(pairingCode, Date.now());
+    const row = stmt.get(pairingCode, Date.now()) as any;
     
     if (!row) return null;
     
@@ -219,6 +219,46 @@ export class XDatabase {
       user_id: row.user_id || undefined,
       completed: Boolean(row.completed)
     };
+  }
+
+  getPairingSessionByState(state: string): PairingSession | null {
+    const stmt = this.db.prepare('SELECT * FROM pairing_sessions WHERE state = ? AND expires_at > ?');
+    const row = stmt.get(state, Date.now()) as any;
+    
+    if (!row) return null;
+    
+    return {
+      pairing_code: row.pairing_code,
+      created_at: row.created_at,
+      expires_at: row.expires_at,
+      code_verifier: row.code_verifier,
+      state: row.state,
+      user_id: row.user_id || undefined,
+      completed: Boolean(row.completed)
+    };
+  }
+
+  getAllUsers(): User[] {
+    const stmt = this.db.prepare('SELECT * FROM users ORDER BY created_at DESC');
+    return stmt.all() as User[];
+  }
+
+  getUserSessionCount(userId: number): number {
+    const stmt = this.db.prepare('SELECT COUNT(*) as count FROM sessions WHERE user_id = ?');
+    const result = stmt.get(userId) as any;
+    return result?.count || 0;
+  }
+
+  getUserLastActivity(userId: number): number | null {
+    const stmt = this.db.prepare('SELECT MAX(created_at) as last_activity FROM sessions WHERE user_id = ?');
+    const result = stmt.get(userId) as any;
+    return result?.last_activity || null;
+  }
+
+  getUserTokenCount(userId: number): number {
+    const stmt = this.db.prepare('SELECT COUNT(*) as count FROM user_tokens WHERE user_id = ?');
+    const result = stmt.get(userId) as any;
+    return result?.count || 0;
   }
 
   completePairingSession(pairingCode: string, userId: number): void {

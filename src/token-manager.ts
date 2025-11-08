@@ -16,8 +16,8 @@ export class TokenManager {
       'users.read',
       'tweet.read', 
       'tweet.write',
-      'bookmark.read',
-      'bookmarks.write',
+      'bookmark.read',  // Note: singular, not plural!
+      'bookmark.write', // Note: singular, not plural!
       'offline.access'
     ];
   }
@@ -25,10 +25,10 @@ export class TokenManager {
   private getToolScopes(toolName: string): string[] {
     switch (toolName) {
       case 'bookmarks.list':
-        return ['bookmark.read', 'bookmarks.read']; // Either is acceptable
+        return ['bookmark.read', 'bookmarks.read']; // Accept both (X uses singular, but check both)
       case 'bookmarks.add':
       case 'bookmarks.remove':
-        return ['bookmarks.write'];
+        return ['bookmark.write']; // Note: singular, not plural!
       case 'tweet.create':
         return ['tweet.write'];
       default:
@@ -159,11 +159,8 @@ export class TokenManager {
     const granted = grantedScopes.split(' ');
     
     return requiredScopes.filter(required => {
-      // Handle bookmark.read vs bookmarks.read
+      // Handle bookmark.read vs bookmarks.read (both are acceptable - X uses singular)
       if (required === 'bookmark.read') {
-        return !granted.includes('bookmark.read') && !granted.includes('bookmarks.read');
-      }
-      if (required === 'bookmarks.read') {
         return !granted.includes('bookmark.read') && !granted.includes('bookmarks.read');
       }
       return !granted.includes(required);

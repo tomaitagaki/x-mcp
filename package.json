@@ -9,6 +9,7 @@
     "start": "node dist/multi-user-server.js",
     "start:legacy": "node dist/index.js",
     "auth": "tsc && node dist/auth-helper.js",
+    "check-auth": "tsc && node dist/check-auth.js",
     "test": "tsc && node dist/test-auth-flows.js",
     "dev": "tsc && node dist/multi-user-server.js",
     "watch": "tsc -w"
@@ -16,8 +17,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "better-sqlite3": "^9.2.2",
-    "keytar": "^7.9.0",
     "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "keytar": "^7.9.0",
     "node-fetch": "^3.3.2",
     "uuid": "^9.0.1"
   },

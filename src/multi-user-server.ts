@@ -255,7 +255,7 @@ class MultiUserXMCPServer {
           case 'auth/start': {
             this.validateConfig();
             
-            const mode = args.mode || 'loopback';
+            const mode = ((args as any)?.mode as string) || 'loopback';
             let result;
             
             if (mode === 'hosted') {
@@ -280,11 +280,12 @@ class MultiUserXMCPServer {
           }
 
           case 'auth/status': {
-            if (!args.pairing_code) {
+            const pairingCode = (args as any)?.pairing_code as string;
+            if (!pairingCode) {
               throw new McpError(ErrorCode.InvalidParams, 'pairing_code is required for auth/status');
             }
 
-            const result = await this.oauthManager.checkPairingStatus(args.pairing_code);
+            const result = await this.oauthManager.checkPairingStatus(pairingCode);
 
             return {
               content: [
@@ -298,9 +299,9 @@ class MultiUserXMCPServer {
 
           case 'bookmarks.list': {
             const result = await this.xClient.getBookmarks({
-              userId: args.user_id,
-              maxResults: args.max_results,
-              paginationToken: args.pagination_token,
+              userId: (args as any)?.user_id as string | undefined,
+              maxResults: (args as any)?.max_results as number | undefined,
+              paginationToken: (args as any)?.pagination_token as string | undefined,
             }, context);
 
             return {
@@ -315,8 +316,8 @@ class MultiUserXMCPServer {
 
           case 'bookmarks.add': {
             const result = await this.xClient.addBookmark({
-              userId: args.user_id,
-              tweetId: args.tweet_id,
+              userId: (args as any)?.user_id as string | undefined,
+              tweetId: (args as any)?.tweet_id as string,
             }, context);
 
             return {
@@ -331,8 +332,8 @@ class MultiUserXMCPServer {
 
           case 'bookmarks.remove': {
             const result = await this.xClient.removeBookmark({
-              userId: args.user_id,
-              tweetId: args.tweet_id,
+              userId: (args as any)?.user_id as string | undefined,
+              tweetId: (args as any)?.tweet_id as string,
             }, context);
 
             return {
@@ -347,10 +348,10 @@ class MultiUserXMCPServer {
 
           case 'tweet.create': {
             const result = await this.xClient.createTweet({
-              text: args.text,
-              mediaIds: args.media_ids,
-              reply: args.reply,
-              quoteTweetId: args.quote_tweet_id,
+              text: (args as any)?.text as string,
+              mediaIds: (args as any)?.media_ids as string[] | undefined,
+              reply: (args as any)?.reply as { inReplyToTweetId: string } | undefined,
+              quoteTweetId: (args as any)?.quote_tweet_id as string | undefined,
             }, context);
 
             return {
